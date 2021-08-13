@@ -11,6 +11,7 @@ import json
 from ipfs_video_index import database
 from datetime import datetime, timezone
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 mimetypes.init()
 mimetypes.add_type("application/xml+metalink", ".metalink")
@@ -29,6 +30,20 @@ class IndexRequest(BaseModel):
 
 app = FastAPI()
 
+origins = [
+    "https://ipfs.video",
+    "https://index.ipfs.video",
+    "http://localhost",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 project = Project(os.environ.get("DQP_PROJECT_PATH", "/project"))
 
@@ -106,7 +121,11 @@ async def post_viewed(index_request: IndexRequest):
 
 @app.get("/viewed/{cid}")
 async def get_viewed(
-    cid: str = Path(default="", example="QmXDs15TwsXWotqm6aqV5VCABoNRBRHwbXMSSmR4uKh8HG", title="The base base 58 CID string"),
+    cid: str = Path(
+        default="",
+        example="QmXDs15TwsXWotqm6aqV5VCABoNRBRHwbXMSSmR4uKh8HG",
+        title="The base base 58 CID string",
+    ),
 ):
     with database.open(project) as db:
         rows = db.execute("select count from view_count where cid = ? limit 1", (cid,))
