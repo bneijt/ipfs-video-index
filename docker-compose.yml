@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  api:
+    build: .
+    command: ["uvicorn", "ipfs_video_index.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - type: volume
+        source: dqp_project
+        target: /project
+    deploy:
+      restart_policy:
+        condition: any        
+  indexer:
+    build: .
+    command: ["python", "-m", "ipfs_video_index.ipfs_indexer", "--loop", "/project"]
+    volumes:
+      - type: volume
+        source: dqp_project
+        target: /project
+    deploy:
+      restart_policy:
+        condition: any
+
+#Share volume
+volumes:
+  dqp_project:
