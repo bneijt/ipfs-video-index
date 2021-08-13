@@ -1,7 +1,6 @@
 import sqlite3
 from dqp.queue import Source, Sink, Project
 from dqp.storage import Folder
-import plyvel
 import contextlib
 import requests
 from tempfile import NamedTemporaryFile
@@ -22,18 +21,6 @@ IPFS_GATEWAYS = [
     "https://hardbin.com/ipfs/",
     "https://dweb.link/ipfs/",
 ]
-
-
-def uniq(source_queue: Source, sink_queue: Sink, state: Folder) -> None:
-    with contextlib.closing(
-        plyvel.DB(state.create_path("db"), create_if_missing=True)
-    ) as db:
-        for part_file, idx, index_request in source_queue:
-            cid_bytes = index_request["cid"].encode("utf-8")
-            if db.get(cid_bytes) is None:
-                # New CID, put on index queue and add to state database
-                db.put(cid_bytes, b"")
-                sink_queue.write_dict(index_request)
 
 
 def extract_information(
@@ -59,23 +46,6 @@ def extract_information(
         for gateway in IPFS_GATEWAYS:
             meta_file.add_url(gateway + cid)
         return meta_file
-
-
-def index_to(indexq: Source, metalinks_folder: Folder):
-    with contextlib.closing(
-        plyvel.DB(metalinks_folder.create_path("db"), create_if_missing=True)
-    ) as db:
-        for part_file, idx, index_request in indexq:
-            cid = index_request["cid"]
-            meta_file = extract_information(cid)
-            metalink_doc = Metalink4()
-            metalink_doc.files.append(meta_file)
-            with open(
-                metalinks_folder.child(f"{cid}.metalink"), "wb"
-            ) as metalink_output:
-                metalink_output.write(metalink_doc.generate())
-
-            db.put(cid.encode("utf-8"), meta_file.filename.encode("utf-8"))
 
 
 def update_view_count(db: sqlite3.Connection, queue: Source):
