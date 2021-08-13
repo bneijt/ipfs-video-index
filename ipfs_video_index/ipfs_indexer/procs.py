@@ -1,16 +1,19 @@
-import sqlite3
-from dqp.queue import Source, Sink, Project
-from dqp.storage import Folder
 import contextlib
-import requests
-from tempfile import NamedTemporaryFile
 import hashlib
-import magic
-from metalink.metalink import Metalink4, MetalinkFile4
-from loguru import logger
 import mimetypes
+import os
+import sqlite3
+from tempfile import NamedTemporaryFile
+from typing import Dict, Set
+
+import magic
+import requests
+from dqp.queue import Project, Sink, Source
+from dqp.storage import Folder
+from loguru import logger
+from metalink.metalink import MetalinkFile4
+
 from ipfs_video_index import database
-from typing import Set
 
 # Unique the index_request queue
 # process the index queue
@@ -21,6 +24,8 @@ IPFS_GATEWAYS = [
     "https://hardbin.com/ipfs/",
     "https://dweb.link/ipfs/",
 ]
+
+IPFS_API_ADDRESS = os.environ.get("IPFS_API_ADDRESS", "http://ipfs:5001")
 
 
 def extract_information(
@@ -72,22 +77,43 @@ def update_view_count(db: sqlite3.Connection, queue: Source):
     logger.info(f"Updated view count for {count}")
 
 
+def get_names(directory_cid: str) -> Dict[str, str]:
+    response = requests.post(
+        IPFS_API_ADDRESS + "/api/v0/ls",
+        params={
+            "arg": directory_cid,
+            "headers": "true",
+            "resolve-type": "true",
+            "size": "true",
+            "stream": "true",
+        },
+    )
+    if response.status_code == 200:
+        result = {}
+        listing = response.json()
+        for link in listing["Objects"][0]["Links"]:
+            if link["Size"] > 100 and link["Name"].endswith(".webm"):
+                result[link["Hash"]] = link["Name"]
+        return result
+    return {}
+
+
 def index(db: sqlite3.Connection, queue: Source):
     count = 0
     for filename, idx, msg in queue:
-        # Register view count
-        db.execute(
-            "insert or ignore into view_count(cid, count) values(?, ?)",
-            (msg["cid"], 0),
-        )
-        count += 1
+        cid = msg["cid"]
+        for cid, name in get_names(cid).items():
+            db.execute(
+                "insert or ignore into names(cid, name) values(?, ?)",
+                (cid, name),
+            )
+            count += 1
     logger.info(f"Added {count} to index")
 
 
 def pipeline(project: Project):
     index_queue = project.continue_source("index")
     played_queue = project.continue_source("played")
-
     with database.open(project) as db:
         index(db, index_queue)
         update_view_count(db, played_queue)

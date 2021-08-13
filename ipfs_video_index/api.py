@@ -1,17 +1,18 @@
-from fastapi import FastAPI, Header, status, Path
-from pydantic import BaseModel
-from dqp.queue import Project
-import multihash
-from fastapi.staticfiles import StaticFiles
-import os
-import mimetypes
-from typing import Optional
-from fastapi.responses import RedirectResponse, StreamingResponse
 import json
-from ipfs_video_index import database
+import mimetypes
+import os
 from datetime import datetime, timezone
-from fastapi.responses import JSONResponse
+from typing import Optional
+
+import multihash
+from dqp.queue import Project
+from fastapi import FastAPI, Header, Path, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+from ipfs_video_index import database
 
 mimetypes.init()
 mimetypes.add_type("application/xml+metalink", ".metalink")
@@ -28,7 +29,10 @@ class IndexRequest(BaseModel):
         }
 
 
-app = FastAPI()
+app = FastAPI(
+    title="IPFS video index API",
+    description="Indexing for IPFS videos",
+)
 
 origins = [
     "https://ipfs.video",

@@ -195,14 +195,6 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 dev = ["pre-commit", "tox"]
 
 [[package]]
-name = "plyvel"
-version = "1.3.0"
-description = "Plyvel, a fast and feature-rich Python interface to LevelDB"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "poetry-lock-package"
 version = "0.4.2"
 description = "Poetry lock package generator"
@@ -408,7 +400,7 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "b74c1637cf088c262cdcd29eca2bd33ab75a5e24f9900ea30c37e7dc71a356a5"
+content-hash = "e79a9d251b6fbb1a51f19361bc74276736860b5a257fd48de53c61680a3f6177"
 
 [metadata.files]
 aiofiles = [
@@ -511,13 +503,6 @@ packaging = [
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
-]
-plyvel = [
-    {file = "plyvel-1.3.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:ca7cc1017e1ddea1293a00df7b1816b060cfe2cd3b324cbaaaeb78ae107328c7"},
-    {file = "plyvel-1.3.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:ccc0bb6237b1f4f49338419b006fac1cd39089dcaccb93b7a8756b83be0c9317"},
-    {file = "plyvel-1.3.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:43fa2850b39ab97b5c1a042295a4e14f7daa0d6902b04d88aa9fb3bb50c74043"},
-    {file = "plyvel-1.3.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:d04a56191f4bccd156963248d4f598cf2487137eb414a6be5874cfb2787d747c"},
-    {file = "plyvel-1.3.0.tar.gz", hash = "sha256:a7a09033a0fd33ca47094e8bbe01714abfcf644f4b7a337d3970e91a2599e2c4"},
 ]
 poetry-lock-package = [
     {file = "poetry-lock-package-0.4.2.tar.gz", hash = "sha256:5c035ede4c31d94764a9b2a75693941e3635e389103188d6e68259fce0ea3d9b"},

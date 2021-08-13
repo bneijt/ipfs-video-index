@@ -1,8 +1,10 @@
-from ipfs_video_index.ipfs_indexer.procs import pipeline
-from dqp.queue import Project
 import argparse
 import time
+
+from dqp.queue import Project
 from loguru import logger
+
+from ipfs_video_index.ipfs_indexer.procs import pipeline
 
 
 def main():

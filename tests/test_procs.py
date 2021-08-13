@@ -1,5 +1,5 @@
-from ipfs_indexer.procs import extract_information
 import pytest
+from ipfs_indexer.procs import extract_information
 
 
 @pytest.mark.skip(reason="requires external ipfs gateway to be online")

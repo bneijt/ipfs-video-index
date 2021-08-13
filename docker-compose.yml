@@ -1,8 +1,20 @@
 version: "3.3"
 services:
+  ipfs:
+    image: bneijt/ipfs-video-gateway:1.3.0
+    environment:
+      DISABLE_NGINX: "true"
   api:
     build: .
-    command: ["uvicorn", "ipfs_video_index.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    command:
+      [
+        "uvicorn",
+        "ipfs_video_index.api:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+      ]
     ports:
       - "8000:8000"
     volumes:
@@ -11,10 +23,11 @@ services:
         target: /project
     deploy:
       restart_policy:
-        condition: any        
+        condition: any
   indexer:
     build: .
-    command: ["python", "-m", "ipfs_video_index.ipfs_indexer", "--loop", "/project"]
+    command:
+      ["python", "-m", "ipfs_video_index.ipfs_indexer", "--loop", "/project"]
     volumes:
       - type: volume
         source: dqp_project
