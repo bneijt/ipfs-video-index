@@ -35,6 +35,8 @@ services:
     deploy:
       restart_policy:
         condition: any
+    environment:
+      IPFS_API_ADDRESS: "http://ipfs:5001"
 
 #Share volume
 volumes:

@@ -25,7 +25,7 @@ IPFS_GATEWAYS = [
     "https://dweb.link/ipfs/",
 ]
 
-IPFS_API_ADDRESS = os.environ.get("IPFS_API_ADDRESS", "http://ipfs:5001")
+IPFS_API_ADDRESS = os.environ.get("IPFS_API_ADDRESS", "http://127.0.0.1:5001")
 
 
 def extract_information(

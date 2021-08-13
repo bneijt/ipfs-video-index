@@ -139,3 +139,16 @@ async def get_viewed(
         status_code=status.HTTP_404_NOT_FOUND,
         content={"message": "not found"},
     )
+
+
+@app.get("/names/{cid}")
+async def get_names(
+    cid: str = Path(
+        default="",
+        example="QmXDs15TwsXWotqm6aqV5VCABoNRBRHwbXMSSmR4uKh8HG",
+        title="The base base 58 CID string",
+    ),
+):
+    with database.open(project) as db:
+        rows = db.execute("select name from names where cid = ? limit 50", (cid,))
+        return {"cid": cid, "names": [r[0] for r in rows]}
