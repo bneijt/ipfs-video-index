@@ -78,23 +78,26 @@ def update_view_count(db: sqlite3.Connection, queue: Source):
 
 
 def get_names(directory_cid: str) -> Dict[str, str]:
-    response = requests.post(
-        IPFS_API_ADDRESS + "/api/v0/ls",
-        params={
-            "arg": directory_cid,
-            "headers": "true",
-            "resolve-type": "true",
-            "size": "true",
-            "stream": "true",
-        },
-    )
-    if response.status_code == 200:
-        result = {}
-        listing = response.json()
-        for link in listing["Objects"][0]["Links"]:
-            if link["Size"] > 100 and link["Name"].endswith(".webm"):
-                result[link["Hash"]] = link["Name"]
-        return result
+    try:
+        response = requests.post(
+            IPFS_API_ADDRESS + "/api/v0/ls",
+            params={
+                "arg": directory_cid,
+                "headers": "true",
+                "resolve-type": "true",
+                "size": "true",
+                "stream": "false",
+            },
+        )
+        if response.status_code == 200:
+            result = {}
+            listing = response.json()
+            for link in listing["Objects"][0]["Links"]:
+                if link["Size"] > 100 and link["Name"].endswith(".webm"):
+                    result[link["Hash"]] = link["Name"]
+            return result
+    except requests.exceptions.Timeout:
+        logger.error(f"Failed to index {directory_cid} due to timeout")
     return {}
 
 
@@ -112,8 +115,8 @@ def index(db: sqlite3.Connection, queue: Source):
 
 
 def pipeline(project: Project):
-    index_queue = project.continue_source("index")
-    played_queue = project.continue_source("played")
+    index_queue = project.open_source("index")
+    played_queue = project.continue_source("viewed")
     with database.open(project) as db:
         index(db, index_queue)
         update_view_count(db, played_queue)

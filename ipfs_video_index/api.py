@@ -24,7 +24,7 @@ class IndexRequest(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "cid": "QmXDs15TwsXWotqm6aqV5VCABoNRBRHwbXMSSmR4uKh8HG",
+                "cid": "QmRWBg8QLeH68Q42dd5QK4Y2JpPyepQKFizWzN6DMAedYg",
             }
         }
 
@@ -52,7 +52,7 @@ app.add_middleware(
 project = Project(os.environ.get("DQP_PROJECT_PATH", "/project"))
 
 index_queue = project.open_sink("index")
-played_queue = project.open_sink("played")
+viewed_queue = project.open_sink("viewed")
 
 app.mount(
     "/metalinks",
@@ -114,7 +114,7 @@ async def add(index_request: IndexRequest):
 @app.post("/viewed")
 async def post_viewed(index_request: IndexRequest):
     cid = multihash.from_b58_string(index_request.cid)
-    played_queue.write_dict(
+    viewed_queue.write_dict(
         {
             "cid": multihash.to_b58_string(cid),
             "timestamp": datetime.now(timezone.utc).timestamp(),
