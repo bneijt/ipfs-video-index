@@ -407,8 +407,8 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9"
-content-hash = "00a66a7f184730d1824ddf3f2214b76152fdb779c9cb9236da4f8ac0ec80ba71"
+python-versions = "^3.8"
+content-hash = "b74c1637cf088c262cdcd29eca2bd33ab75a5e24f9900ea30c37e7dc71a356a5"
 
 [metadata.files]
 aiofiles = [

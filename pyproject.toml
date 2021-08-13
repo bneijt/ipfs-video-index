@@ -5,7 +5,7 @@ description = ""
 authors = ["Bram Neijt <bram@neijt.nl>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 fastapi = "^0.68.0"
 py-multihash = "^2.0.1"
 dqp = "^0.0.3"
