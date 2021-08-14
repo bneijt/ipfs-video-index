@@ -152,3 +152,17 @@ async def get_names(
     with database.open(project) as db:
         rows = db.execute("select name from names where cid = ? limit 50", (cid,))
         return {"cid": cid, "names": [r[0] for r in rows]}
+
+
+@app.get("/names")
+async def index_names():
+    with database.open(project) as db:
+        rows = db.execute(
+            "select names.cid, names.name from view_count inner join names on names.cid = view_count.cid order by view_count.count desc limit 500"
+        )
+        result = {}
+        for cid, name in rows:
+            if cid not in result:
+                result[cid] = []
+            result[cid].append(name)
+        return result

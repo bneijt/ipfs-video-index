@@ -110,6 +110,10 @@ def index(db: sqlite3.Connection, queue: Source):
                 "insert or ignore into names(cid, name) values(?, ?)",
                 (cid, name),
             )
+            db.execute(
+                "insert or ignore into view_count(cid) values(?)",
+                (cid,),
+            )
             count += 1
     logger.info(f"Added {count} to index")
 
