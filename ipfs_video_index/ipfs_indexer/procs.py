@@ -119,8 +119,10 @@ def index(db: sqlite3.Connection, queue: Source):
 
 
 def pipeline(project: Project):
-    index_queue = project.open_source("index")
+    index_queue = project.continue_source("index")
     played_queue = project.continue_source("viewed")
     with database.open(project) as db:
         index(db, index_queue)
         update_view_count(db, played_queue)
+        index_queue.unlink_to()
+        played_queue.unlink_to()
