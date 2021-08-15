@@ -31,7 +31,7 @@ class IndexRequest(BaseModel):
 
 app = FastAPI(
     title="IPFS video index API",
-    description="Indexing for IPFS videos",
+    description="Indexing for IPFS videos. Source available at https://github.com/bneijt/ipfs-video-index",
 )
 
 origins = [
