@@ -5,7 +5,7 @@ import os
 import sqlite3
 from tempfile import NamedTemporaryFile
 from typing import Dict, Set
-
+import re
 import magic
 import requests
 from dqp.queue import Project, Sink, Source
@@ -26,6 +26,8 @@ IPFS_GATEWAYS = [
 ]
 
 IPFS_API_ADDRESS = os.environ.get("IPFS_API_ADDRESS", "http://127.0.0.1:5001")
+
+DIRECT_FILE_LINKS_REGEX = re.compile('href="/ipfs/(.+)[?]filename=(.+)"')
 
 
 def extract_information(
@@ -77,7 +79,24 @@ def update_view_count(db: sqlite3.Connection, queue: Source):
     logger.info(f"Updated view count for {count}")
 
 
-def get_names(directory_cid: str) -> Dict[str, str]:
+def extract_names(response: str) -> Dict[str, str]:
+    references = {}  # type: Dict[str, str]
+    for match in DIRECT_FILE_LINKS_REGEX.finditer(response):
+        references[match.group(1)] = match.group(2)
+    return references
+
+
+def get_names_gateway(directory_cid: str) -> Dict[str, str]:
+    with logger.catch(reraise=False):
+        response = requests.get(
+            IPFS_GATEWAYS[2] + directory_cid,
+        )
+        return extract_names(response.text)
+    return {}
+
+
+def get_names_api(directory_cid: str) -> Dict[str, str]:
+    """Due to memory usage of go-ipfs, this is currently not being used"""
     try:
         response = requests.post(
             IPFS_API_ADDRESS + "/api/v0/ls",
@@ -105,7 +124,7 @@ def index(db: sqlite3.Connection, queue: Source):
     count = 0
     for filename, idx, msg in queue:
         cid = msg["cid"]
-        for cid, name in get_names(cid).items():
+        for cid, name in get_names_gateway(cid).items():
             db.execute(
                 "insert or ignore into names(cid, name) values(?, ?)",
                 (cid, name),
