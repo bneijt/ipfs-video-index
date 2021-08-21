@@ -22,11 +22,13 @@ def main():
     while True:
         logger.info(f"Executing pipeline on {args.project_path}")
         with Project(args.project_path) as project:
-            pipeline(project)
+            with logger.catch(reraise=False):
+                pipeline(project)
         if args.loop:
             time.sleep(60)
         else:
             break
 
 
-main()
+if __name__ == "__main__":
+    main()
