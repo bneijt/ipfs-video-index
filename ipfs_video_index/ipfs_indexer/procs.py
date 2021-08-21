@@ -2,11 +2,14 @@ import contextlib
 import hashlib
 import mimetypes
 import os
+import re
 import sqlite3
 from tempfile import NamedTemporaryFile
 from typing import Dict, Set
-import re
+from urllib.parse import parse_qs, unquote_plus, urlparse
+
 import magic
+import multihash
 import requests
 from dqp.queue import Project, Sink, Source
 from dqp.storage import Folder
@@ -27,7 +30,7 @@ IPFS_GATEWAYS = [
 
 IPFS_API_ADDRESS = os.environ.get("IPFS_API_ADDRESS", "http://127.0.0.1:5001")
 
-DIRECT_FILE_LINKS_REGEX = re.compile('href="/ipfs/(.+)[?]filename=(.+)"')
+IPFS_LINKS_REGEX = re.compile('href="/ipfs/(.+)"')
 
 
 def extract_information(
@@ -81,8 +84,29 @@ def update_view_count(db: sqlite3.Connection, queue: Source):
 
 def extract_names(response: str) -> Dict[str, str]:
     references = {}  # type: Dict[str, str]
-    for match in DIRECT_FILE_LINKS_REGEX.finditer(response):
-        references[match.group(1)] = match.group(2)
+    for match in IPFS_LINKS_REGEX.finditer(response):
+        with logger.catch(reraise=False):
+            parsed = urlparse(unquote_plus(match.group(1)))
+            url_path = parsed.path.lstrip("/")
+            if "/" in url_path:
+                # Not a single cid with ?filename, but a longer path
+                continue
+
+            query_string = parsed.query
+            if not query_string:
+                # No filename= query string found
+                continue
+
+            cid = multihash.from_b58_string(url_path)
+            if not multihash.is_valid(cid):
+                logger.info("Invalid mutlithash found: '{parsed.path}'")
+                continue
+            cid_key = multihash.to_b58_string(cid)
+
+            cid_filename = parse_qs(
+                query_string, strict_parsing=False, max_num_fields=40
+            )["filename"][0]
+            references[cid_key] = cid_filename
     return references
 
 

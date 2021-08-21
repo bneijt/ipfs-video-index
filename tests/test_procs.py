@@ -1,4 +1,5 @@
 import pytest
+
 from ipfs_video_index.ipfs_indexer.procs import extract_information, extract_names
 
 
@@ -16,4 +17,10 @@ def test_direct_links_regex():
           </a>"""
     assert extract_names(content) == {
         "QmUsxG6i5XsCGu4dJZcvvyMbsXrUt5sgL6H2JwGmtBhHqW": "01_llama_drama_1080p.webm"
+    }
+
+    assert extract_names(
+        '<a class="ipfs-hash" href="/ipfs/QmXDs15TwsXWotqm6aqV5VCABoNRBRHwbXMSSmR4uKh8HG?filename=production%2520ID%25204586618.webm">'
+    ) == {
+        "QmXDs15TwsXWotqm6aqV5VCABoNRBRHwbXMSSmR4uKh8HG": "production ID 4586618.webm"
     }
