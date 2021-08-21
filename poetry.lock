@@ -90,7 +90,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "dqp"
-version = "0.0.5"
+version = "0.0.6"
 description = "A simple library to process a list of messages from disk"
 category = "main"
 optional = false
@@ -400,7 +400,7 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "7a5bd3487cbadb5784242911d5c8601ef3a25683be87fc032911626395348d23"
+content-hash = "a2a0c8e797896742904c4b88a64d4c8b3581b55b2c2c967249e053c1d3f841f8"
 
 [metadata.files]
 aiofiles = [
@@ -440,8 +440,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 dqp = [
-    {file = "dqp-0.0.5-py3-none-any.whl", hash = "sha256:785986e83755c94be2d24e07dba51c1b70bd8d19cdbfdc79a4b1b6ec022f6799"},
-    {file = "dqp-0.0.5.tar.gz", hash = "sha256:1c4a427699bc646bc68becb1492a95e3cbab2b677dd101840a9cd4b150fa2078"},
+    {file = "dqp-0.0.6-py3-none-any.whl", hash = "sha256:7d07be5166b888dab26f0ecda2927395ab8ac5702844f168510b7246285c5ad0"},
+    {file = "dqp-0.0.6.tar.gz", hash = "sha256:57b0e04ca4c24f27c18c90302e78f5ef9b752bd2b42a9ffd083ebf6e47a41b35"},
 ]
 fastapi = [
     {file = "fastapi-0.68.0-py3-none-any.whl", hash = "sha256:f4dba2596b1e0a1f962834c3b9ec4291a7aec387a1031c6c2e25bf239d27fd0f"},
